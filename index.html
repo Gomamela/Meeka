@@ -49,6 +49,7 @@
   --container: 1200px;
   --gutter: clamp(1.25rem, 5vw, 3.5rem);
   --section-pad: clamp(4rem, 9vw, 7.5rem);
+  --nav-h: 80px; /* fallback; JS measures the real sticky-nav height on load/resize */
 
   --ease: cubic-bezier(.22, 1, .36, 1);
   --ease-bounce: cubic-bezier(.34, 1.56, .64, 1);
@@ -60,7 +61,7 @@
    ========================================================================== */
 
 *, *::before, *::after{ box-sizing: border-box; }
-html{ scroll-behavior: smooth; }
+html{ scroll-behavior: smooth; scroll-padding-top: var(--nav-h); }
 
 body{
   margin: 0;
@@ -97,12 +98,14 @@ section{ position: relative; }
 }
 
 .skip-link{
-  position: absolute; left: 1rem; top: -60px;
+  position: absolute; left: 1rem; top: 1rem;
   background: var(--brown-deep); color: var(--white);
   padding: .75rem 1.25rem; border-radius: var(--radius-sm);
-  z-index: 999; transition: top .2s var(--ease);
+  z-index: 999;
+  transform: translateY(-80px);
+  transition: transform .25s var(--ease);
 }
-.skip-link:focus{ top: 1rem; }
+.skip-link:focus{ transform: translateY(0); }
 
 :focus-visible{
   outline: 3px solid var(--honey);
@@ -175,12 +178,12 @@ section.on-dark .highlight{ color: var(--honey-2); }
   font-weight: 700;
   font-size: .98rem;
   border: 2px solid transparent;
-  transition: transform .6s var(--ease-bounce), box-shadow .4s var(--ease), background-color .4s var(--ease), color .4s var(--ease), border-color .4s var(--ease);
+  transition: transform .32s var(--ease-bounce), box-shadow .25s var(--ease), background-color .25s var(--ease), color .25s var(--ease), border-color .25s var(--ease);
   white-space: nowrap;
 }
 .btn:hover{ transform: translateY(-3px) scale(1.035); }
 .btn:active{ transform: scale(.96, .88); transition: transform .12s var(--ease); }
-.btn svg{ width: 1.15em; height: 1.15em; flex: none; transition: transform .55s var(--ease-bounce), stroke .4s var(--ease), fill .4s var(--ease); }
+.btn svg{ width: 1.15em; height: 1.15em; flex: none; transition: transform .32s var(--ease-bounce), stroke .25s var(--ease), fill .25s var(--ease); }
 .btn:hover svg{ transform: scale(1.18) rotate(-6deg); }
 .btn:active svg{ transform: scale(1.05); transition-duration: .1s; }
 
@@ -294,17 +297,17 @@ section.on-dark .doodle{ color: var(--honey-2); }
 .nav-links a{
   position: relative;
   padding-block: .3rem;
+  overflow: hidden;
 }
 .nav-links a::after{
   content: '';
-  position: absolute; left: 0; right: 0; bottom: -2px;
+  position: absolute; left: 0; right: 0; bottom: 0;
   height: 2px; background: var(--brown-gold);
   border-radius: var(--radius-full);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform .65s var(--ease-smooth);
+  transform: translateX(-100%);
+  transition: transform .6s var(--ease);
 }
-.nav-links a:hover::after{ transform: scaleX(1); }
+.nav-links a:hover::after{ transform: translateX(0); }
 
 .nav-cta{ display: flex; align-items: center; gap: .75rem; }
 
@@ -315,12 +318,23 @@ section.on-dark .doodle{ color: var(--honey-2); }
   padding: .4rem;
   color: var(--brown-deep);
   border-radius: 50%;
-  transition: background-color .4s var(--ease), transform .45s var(--ease-bounce);
+  transition: background-color .25s var(--ease), transform .38s var(--ease-bounce);
 }
 .nav-toggle:hover{ background: rgba(120,86,26,.1); }
 .nav-toggle:active{ transform: scale(.85); }
-.nav-toggle svg{ width: 26px; height: 26px; transition: transform .5s var(--ease-bounce); }
-.nav.is-open .nav-toggle svg{ transform: rotate(90deg); }
+.nav-toggle-bars{ position: relative; width: 22px; height: 16px; display: inline-block; }
+.nav-toggle-bars span{
+  position: absolute; left: 0; width: 100%; height: 2.2px;
+  border-radius: var(--radius-full);
+  background: currentColor;
+  transition: transform .38s var(--ease-bounce), opacity .22s var(--ease), top .38s var(--ease-bounce);
+}
+.nav-toggle-bars span:nth-child(1){ top: 0; }
+.nav-toggle-bars span:nth-child(2){ top: 7px; }
+.nav-toggle-bars span:nth-child(3){ top: 14px; }
+.nav.is-open .nav-toggle-bars span:nth-child(1){ top: 7px; transform: rotate(45deg); }
+.nav.is-open .nav-toggle-bars span:nth-child(2){ opacity: 0; transform: scaleX(0); }
+.nav.is-open .nav-toggle-bars span:nth-child(3){ top: 7px; transform: rotate(-45deg); }
 
 /* ==========================================================================
    Hero
@@ -722,6 +736,12 @@ section.on-dark .doodle{ color: var(--honey-2); }
    ========================================================================== */
 
 .shorts{ padding-block: var(--section-pad); }
+.shorts.on-dark{
+  background:
+    radial-gradient(600px 380px at 50% 92%, rgba(142,155,120,.22), transparent 70%),
+    radial-gradient(420px 300px at 90% 4%, rgba(233,191,124,.13), transparent 70%),
+    var(--brown-deep);
+}
 
 .tab-bar{
   display: flex;
@@ -737,7 +757,7 @@ section.on-dark .doodle{ color: var(--honey-2); }
   border-radius: var(--radius-full);
   font-weight: 700;
   font-size: .88rem;
-  transition: border-color .4s var(--ease), background-color .4s var(--ease), color .4s var(--ease), transform .5s var(--ease-bounce);
+  transition: border-color .25s var(--ease), background-color .25s var(--ease), color .25s var(--ease), transform .32s var(--ease-bounce);
 }
 .tab-btn:hover{ border-color: rgba(233,191,124,.5); color: var(--honey-2); transform: translateY(-2px); }
 .tab-btn:active{ transform: scale(.93, .88); transition-duration: .1s; }
@@ -754,32 +774,53 @@ section.on-dark .doodle{ color: var(--honey-2); }
 }
 
 .shorts-panel{ display: none; }
-.shorts-panel.is-active{ display: block; }
+.shorts-panel.is-active{ display: block; transition: opacity .26s var(--ease), transform .26s var(--ease); }
 
 .shorts-grid{
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1.25rem;
-  max-width: 640px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
 }
 .short-card{
+  flex: 1 1 230px;
+  max-width: 280px;
   border-radius: var(--radius-md);
   overflow: hidden;
   background: #1a1102;
   border: 1.5px solid rgba(227,218,206,.18);
   box-shadow: var(--shadow-sm);
-  transition: transform .3s var(--ease);
+  transition: transform .34s var(--ease-bounce), box-shadow .3s var(--ease), border-color .3s var(--ease);
 }
-.short-card:hover{ transform: translateY(-5px); }
+.short-card:hover{
+  transform: translateY(-6px);
+  box-shadow: 0 18px 40px rgba(20,12,0,.4), 0 0 0 1.5px rgba(233,191,124,.4);
+  border-color: rgba(233,191,124,.45);
+}
 .short-frame{
   position: relative;
   width: 100%;
   aspect-ratio: 9/16;
+  overflow: hidden;
+  background: #1a1102;
 }
-.short-frame iframe{
+.short-poster{
   position: absolute; inset: 0;
   width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.short-frame.is-loaded .short-poster{ display: none; }
+.short-frame iframe{
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 130%; height: 130%;
+  transform: translate(-50%, -50%);
   border: 0;
+  /* Drive's own player letterboxes clips that aren't native 9:16 — this
+     oversizes the iframe and crops the excess so it reads as "filled"
+     instead of floating in black bars. It can't fix genuinely off-center
+     source footage; the real fix for that is exporting the clip at 9:16. */
 }
 
 /* ==========================================================================
@@ -821,7 +862,7 @@ section.on-dark .doodle{ color: var(--honey-2); }
   display: flex;
   align-items: center;
   gap: .9rem;
-  transition: transform .55s var(--ease-bounce), background .4s var(--ease), box-shadow .45s var(--ease);
+  transition: transform .32s var(--ease-bounce), background .25s var(--ease), box-shadow .3s var(--ease);
   position: relative;
 }
 .contact-card:hover{ transform: translateY(-4px) scale(1.015); background: rgba(255,255,255,.16); box-shadow: var(--shadow-md); }
@@ -831,7 +872,7 @@ section.on-dark .doodle{ color: var(--honey-2); }
   background: rgba(255,255,255,.18);
   display: flex; align-items: center; justify-content: center;
   flex: none;
-  transition: transform .55s var(--ease-bounce), background .4s var(--ease);
+  transition: transform .32s var(--ease-bounce), background .25s var(--ease);
 }
 .contact-card:hover .ic{ transform: scale(1.15) rotate(10deg); background: rgba(255,255,255,.3); }
 .contact-card .ic svg{ width: 20px; height: 20px; }
@@ -849,7 +890,7 @@ section.on-dark .doodle{ color: var(--honey-2); }
   border-radius: var(--radius-full);
   opacity: 0;
   transform: translateY(6px);
-  transition: all .25s var(--ease);
+  transition: opacity .22s var(--ease), transform .22s var(--ease);
   pointer-events: none;
 }
 .copy-toast.show{ opacity: 1; transform: translateY(0); }
@@ -886,7 +927,7 @@ section.on-dark .doodle{ color: var(--honey-2); }
   border-radius: 50%;
   background: rgba(227,218,206,.1);
   display: flex; align-items: center; justify-content: center;
-  transition: background .4s var(--ease), transform .45s var(--ease-bounce);
+  transition: background .25s var(--ease), transform .35s var(--ease-bounce);
 }
 .footer-inner .socials a:hover{ background: var(--brown-gold); transform: translateY(-3px) scale(1.1) rotate(-8deg); }
 .footer-inner .socials a:active{ transform: scale(.88); transition-duration: .1s; }
@@ -924,10 +965,9 @@ section.on-dark .doodle{ color: var(--honey-2); }
 }
 
 @media (max-width: 720px){
-  .nav-links, .nav-cta .btn-ghost{ display: none; }
+  .nav-cta .btn-ghost{ display: none; }
   .nav-toggle{ display: inline-flex; align-items: center; justify-content: center; }
-  .nav.is-open .nav-links{
-    display: flex;
+  .nav-links{
     position: absolute;
     top: 100%; left: 0; right: 0;
     flex-direction: column;
@@ -937,6 +977,18 @@ section.on-dark .doodle{ color: var(--honey-2); }
     border-bottom: 1px solid rgba(62,39,0,.1);
     box-shadow: var(--shadow-md);
     gap: 1.1rem;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    pointer-events: none;
+    transition: opacity .28s var(--ease), transform .32s var(--ease), visibility 0s linear .32s;
+  }
+  .nav.is-open .nav-links{
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+    transition: opacity .28s var(--ease), transform .32s var(--ease), visibility 0s linear 0s;
   }
   .nav.is-open .nav-cta .btn-ghost{ display: none; }
 
@@ -955,19 +1007,7 @@ section.on-dark .doodle{ color: var(--honey-2); }
   .btn{ font-size: .92rem; padding: .85rem 1.4rem; }
 }
 
-/* ==========================================================================
-   Reduced motion
-   ========================================================================== */
 
-@media (prefers-reduced-motion: reduce){
-  html{ scroll-behavior: auto; }
-  *, *::before, *::after{
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
-  }
-  [data-reveal]{ opacity: 1; transform: none; }
-}
 
 </style>
 </head>
@@ -990,7 +1030,7 @@ section.on-dark .doodle{ color: var(--honey-2); }
     <div class="nav-cta">
       <a href="#contact" class="btn btn-ghost btn-sm">Hire Me</a>
       <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-controls="siteNav">
-        <svg id="navToggleIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        <span class="nav-toggle-bars" aria-hidden="true"><span></span><span></span><span></span></span>
       </button>
     </div>
   </div>
@@ -1183,6 +1223,12 @@ section.on-dark .doodle{ color: var(--honey-2); }
 
   <!-- ============================= SHORT-FORM EDITS ============================= -->
   <section class="shorts on-dark" id="shorts">
+    <span class="doodle" style="width:46px; top:8%; right:7%;" aria-hidden="true">
+      <svg viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 30 Q 18 10, 30 30 T 54 30"/></svg>
+    </span>
+    <span class="doodle bob" style="width:24px; bottom:10%; left:4%;" aria-hidden="true">
+      <svg viewBox="0 0 40 40" fill="currentColor"><path d="M20 2 L23 16 L37 20 L23 24 L20 38 L17 24 L3 20 L17 16 Z"/></svg>
+    </span>
     <div class="container">
       <div class="section-head" data-reveal>
         <span class="eyebrow">Short-form edits</span>
@@ -1199,30 +1245,66 @@ section.on-dark .doodle{ color: var(--honey-2); }
 
       <div class="shorts-panel is-active" id="panel-vsl" data-reveal>
         <div class="shorts-grid">
-          <div class="short-card"><div class="short-frame"><iframe src="https://drive.google.com/file/d/17WFbh_W1t7eQxxoKo_0LMEqBUvcr82h2/preview" title="VSL short edit" loading="lazy" allow="autoplay"></iframe></div></div>
-          <div class="short-card"><div class="short-frame"><iframe src="https://drive.google.com/file/d/1VxkiZsiVBe8kgTrFDYxo_bEvUPHYEYd8/preview" title="VSL short edit" loading="lazy" allow="autoplay"></iframe></div></div>
+          <div class="short-card">
+            <div class="short-frame" data-embed-src="https://drive.google.com/file/d/17WFbh_W1t7eQxxoKo_0LMEqBUvcr82h2/preview" data-title="VSL short edit">
+              <img class="short-poster" src="https://drive.google.com/thumbnail?id=17WFbh_W1t7eQxxoKo_0LMEqBUvcr82h2&amp;sz=w640" alt="" loading="lazy" onerror="this.remove()">
+            </div>
+          </div>
+          <div class="short-card">
+            <div class="short-frame" data-embed-src="https://drive.google.com/file/d/1VxkiZsiVBe8kgTrFDYxo_bEvUPHYEYd8/preview" data-title="VSL short edit">
+              <img class="short-poster" src="https://drive.google.com/thumbnail?id=1VxkiZsiVBe8kgTrFDYxo_bEvUPHYEYd8&amp;sz=w640" alt="" loading="lazy" onerror="this.remove()">
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="shorts-panel" id="panel-ppc" data-reveal>
         <div class="shorts-grid">
-          <div class="short-card"><div class="short-frame"><iframe src="https://drive.google.com/file/d/1_6dHM0KuVKbdAONGZ_Q7K0e8Es6aqvfY/preview" title="Pay per click short edit" loading="lazy" allow="autoplay"></iframe></div></div>
-          <div class="short-card"><div class="short-frame"><iframe src="https://drive.google.com/file/d/1YyK3QZpyVB4KUKs7Jy6OzHNLA9ciWt5x/preview" title="Pay per click short edit" loading="lazy" allow="autoplay"></iframe></div></div>
+          <div class="short-card">
+            <div class="short-frame" data-embed-src="https://drive.google.com/file/d/1_6dHM0KuVKbdAONGZ_Q7K0e8Es6aqvfY/preview" data-title="Pay per click short edit">
+              <img class="short-poster" src="https://drive.google.com/thumbnail?id=1_6dHM0KuVKbdAONGZ_Q7K0e8Es6aqvfY&amp;sz=w640" alt="" loading="lazy" onerror="this.remove()">
+            </div>
+          </div>
+          <div class="short-card">
+            <div class="short-frame" data-embed-src="https://drive.google.com/file/d/1YyK3QZpyVB4KUKs7Jy6OzHNLA9ciWt5x/preview" data-title="Pay per click short edit">
+              <img class="short-poster" src="https://drive.google.com/thumbnail?id=1YyK3QZpyVB4KUKs7Jy6OzHNLA9ciWt5x&amp;sz=w640" alt="" loading="lazy" onerror="this.remove()">
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="shorts-panel" id="panel-mc" data-reveal>
         <div class="shorts-grid">
-          <div class="short-card"><div class="short-frame"><iframe src="https://drive.google.com/file/d/1IWp_rHtUdPoT1RLUlKX6GpIV9LRQyhtf/preview" title="Minecraft short edit" loading="lazy" allow="autoplay"></iframe></div></div>
-          <div class="short-card"><div class="short-frame"><iframe src="https://drive.google.com/file/d/1_GFd_FtlsVEv8EYNI35N2C-JhyrZIkOw/preview" title="Minecraft short edit" loading="lazy" allow="autoplay"></iframe></div></div>
+          <div class="short-card">
+            <div class="short-frame" data-embed-src="https://drive.google.com/file/d/1IWp_rHtUdPoT1RLUlKX6GpIV9LRQyhtf/preview" data-title="Minecraft short edit">
+              <img class="short-poster" src="https://drive.google.com/thumbnail?id=1IWp_rHtUdPoT1RLUlKX6GpIV9LRQyhtf&amp;sz=w640" alt="" loading="lazy" onerror="this.remove()">
+            </div>
+          </div>
+          <div class="short-card">
+            <div class="short-frame" data-embed-src="https://drive.google.com/file/d/1_GFd_FtlsVEv8EYNI35N2C-JhyrZIkOw/preview" data-title="Minecraft short edit">
+              <img class="short-poster" src="https://drive.google.com/thumbnail?id=1_GFd_FtlsVEv8EYNI35N2C-JhyrZIkOw&amp;sz=w640" alt="" loading="lazy" onerror="this.remove()">
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="shorts-panel" id="panel-more" data-reveal>
         <div class="shorts-grid">
-          <div class="short-card"><div class="short-frame"><iframe src="https://drive.google.com/file/d/1itWOBCa2AEBLv0_nZhacYjlZuvVeE-Zq/preview" title="Short edit" loading="lazy" allow="autoplay"></iframe></div></div>
-          <div class="short-card"><div class="short-frame"><iframe src="https://drive.google.com/file/d/14PfZ1TnszG_Rb0NatK62T1rYWB83k-KL/preview" title="Short edit" loading="lazy" allow="autoplay"></iframe></div></div>
-          <div class="short-card"><div class="short-frame"><iframe src="https://drive.google.com/file/d/1w0aJjYODupRIzZS9wN9uNuR6vTLMd81K/preview" title="Short edit" loading="lazy" allow="autoplay"></iframe></div></div>
+          <div class="short-card">
+            <div class="short-frame" data-embed-src="https://drive.google.com/file/d/1itWOBCa2AEBLv0_nZhacYjlZuvVeE-Zq/preview" data-title="Short edit">
+              <img class="short-poster" src="https://drive.google.com/thumbnail?id=1itWOBCa2AEBLv0_nZhacYjlZuvVeE-Zq&amp;sz=w640" alt="" loading="lazy" onerror="this.remove()">
+            </div>
+          </div>
+          <div class="short-card">
+            <div class="short-frame" data-embed-src="https://drive.google.com/file/d/14PfZ1TnszG_Rb0NatK62T1rYWB83k-KL/preview" data-title="Short edit">
+              <img class="short-poster" src="https://drive.google.com/thumbnail?id=14PfZ1TnszG_Rb0NatK62T1rYWB83k-KL&amp;sz=w640" alt="" loading="lazy" onerror="this.remove()">
+            </div>
+          </div>
+          <div class="short-card">
+            <div class="short-frame" data-embed-src="https://drive.google.com/file/d/1w0aJjYODupRIzZS9wN9uNuR6vTLMd81K/preview" data-title="Short edit">
+              <img class="short-poster" src="https://drive.google.com/thumbnail?id=1w0aJjYODupRIzZS9wN9uNuR6vTLMd81K&amp;sz=w640" alt="" loading="lazy" onerror="this.remove()">
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1291,8 +1373,6 @@ section.on-dark .doodle{ color: var(--honey-2); }
 <script>
 (function () {
   'use strict';
-
-  var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* ---------------- Hero ambient background: JS recreation of the green liquid-marble clip ---------------- */
   (function () {
@@ -1407,18 +1487,42 @@ section.on-dark .doodle{ color: var(--honey-2); }
       t += 0.016;
     }
 
-    function loop() { draw(); raf = requestAnimationFrame(loop); }
-    function start() { if (!raf && !prefersReducedMotion) loop(); }
-    function stop() { if (raf) cancelAnimationFrame(raf); raf = null; }
+    /* This background is purely ambient, so it doesn't need a full 60fps to read as
+       smooth motion — capping it frees up the main thread for scroll and UI transitions. */
+    var FRAME_BUDGET = 1000 / 30;
+    var lastFrameTime = 0;
+    var inView = true;
+
+    function loop(now) {
+      raf = requestAnimationFrame(loop);
+      if (now - lastFrameTime < FRAME_BUDGET) return;
+      lastFrameTime = now;
+      draw();
+    }
+    function start() {
+      if (!raf && inView && !document.hidden) {
+        lastFrameTime = 0;
+        raf = requestAnimationFrame(loop);
+      }
+    }
+    function stop() { if (raf) { cancelAnimationFrame(raf); raf = null; } }
 
     resize();
     populate();
     draw();
-    if (!prefersReducedMotion) start();
+    start();
 
     document.addEventListener('visibilitychange', function () {
       if (document.hidden) stop(); else start();
     });
+
+    if ('IntersectionObserver' in window) {
+      var canvasObserver = new IntersectionObserver(function (entries) {
+        inView = entries[0].isIntersecting;
+        if (inView) start(); else stop();
+      }, { threshold: 0 });
+      canvasObserver.observe(canvas);
+    }
 
     var resizeTimer;
     window.addEventListener('resize', function () {
@@ -1442,21 +1546,42 @@ section.on-dark .doodle{ color: var(--honey-2); }
   document.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
+  /* ---------------- Nav height → anchor-scroll offset ---------------- */
+  /* Drives the --nav-h custom property (used by scroll-padding-top) so
+     jumping to a section lands just below the sticky nav, not under it. */
+  function setNavHeight() {
+    if (!nav) return;
+    document.documentElement.style.setProperty('--nav-h', nav.offsetHeight + 'px');
+  }
+  setNavHeight();
+  window.addEventListener('resize', setNavHeight, { passive: true });
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(setNavHeight);
+  }
+
+  /* ---------------- Smooth anchor scroll ---------------- */
+  /* CSS scroll-behavior isn't reliably honored on anchor-link clicks in every
+     browser, so drive the animation from JS for all in-page links instead. */
+  document.querySelectorAll('a[href^="#"]').forEach(function (link) {
+    link.addEventListener('click', function (e) {
+      var hash = link.getAttribute('href');
+      if (!hash || hash === '#') return;
+      var target = document.querySelector(hash);
+      if (!target) return;
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (history.pushState) history.pushState(null, '', hash);
+    });
+  });
+
   /* ---------------- Mobile nav toggle ---------------- */
   var navToggle = document.getElementById('navToggle');
-  var navToggleIcon = document.getElementById('navToggleIcon');
-  var OPEN_PATH = 'M3 6h18M3 12h18M3 18h18';
-  var CLOSE_PATH = 'M6 6l12 12M18 6 6 18';
 
   function setNavOpen(open) {
     if (!nav || !navToggle) return;
     nav.classList.toggle('is-open', open);
     navToggle.setAttribute('aria-expanded', String(open));
     navToggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
-    if (navToggleIcon) {
-      var path = navToggleIcon.querySelector('path');
-      if (path) path.setAttribute('d', open ? CLOSE_PATH : OPEN_PATH);
-    }
   }
 
   if (navToggle) {
@@ -1471,7 +1596,7 @@ section.on-dark .doodle{ color: var(--honey-2); }
 
   /* ---------------- Scroll reveal ---------------- */
   var revealEls = document.querySelectorAll('[data-reveal]');
-  if (prefersReducedMotion || !('IntersectionObserver' in window)) {
+  if (!('IntersectionObserver' in window)) {
     revealEls.forEach(function (el) { el.classList.add('in-view'); });
   } else {
     var io = new IntersectionObserver(function (entries) {
@@ -1487,7 +1612,52 @@ section.on-dark .doodle{ color: var(--honey-2); }
 
   /* ---------------- Short-form tabs ---------------- */
   var tabButtons = document.querySelectorAll('.tab-btn');
-  var panels = document.querySelectorAll('.shorts-panel');
+
+  /* Loads the real Drive iframes for a panel's cards the moment that panel
+     is shown — on first page load for the default tab, or the first time
+     a visitor switches to another tab. No extra "click to reveal the
+     player" step: you land on Drive's own play button right away. */
+  function loadPanelEmbeds(panel) {
+    if (!panel || panel.dataset.embedsLoaded) return;
+    panel.dataset.embedsLoaded = 'true';
+    panel.querySelectorAll('.short-frame[data-embed-src]').forEach(function (frame) {
+      var iframe = document.createElement('iframe');
+      iframe.src = frame.getAttribute('data-embed-src');
+      iframe.title = frame.getAttribute('data-title') || 'Video';
+      iframe.loading = 'lazy';
+      iframe.setAttribute('allow', 'autoplay');
+      iframe.setAttribute('allowfullscreen', '');
+      frame.appendChild(iframe);
+      frame.classList.add('is-loaded');
+    });
+  }
+
+  function showPanel(targetId) {
+    var next = document.getElementById('panel-' + targetId);
+    var current = document.querySelector('.shorts-panel.is-active');
+    if (!next || next === current) return;
+
+    function revealNext() {
+      next.classList.add('is-active');
+      loadPanelEmbeds(next);
+      next.style.opacity = '0';
+      next.style.transform = 'translateY(10px)';
+      void next.offsetWidth; /* force reflow so the transition starts from this state */
+      next.style.opacity = '1';
+      next.style.transform = 'translateY(0)';
+    }
+
+    if (!current) { revealNext(); return; }
+
+    current.style.opacity = '0';
+    current.style.transform = 'translateY(-10px)';
+    window.setTimeout(function () {
+      current.classList.remove('is-active');
+      current.style.opacity = '';
+      current.style.transform = '';
+      revealNext();
+    }, 220);
+  }
 
   tabButtons.forEach(function (btn) {
     btn.addEventListener('click', function () {
@@ -1499,11 +1669,11 @@ section.on-dark .doodle{ color: var(--honey-2); }
         b.setAttribute('aria-selected', String(active));
       });
 
-      panels.forEach(function (panel) {
-        panel.classList.toggle('is-active', panel.id === 'panel-' + target);
-      });
+      showPanel(target);
     });
   });
+
+  loadPanelEmbeds(document.querySelector('.shorts-panel.is-active'));
 
   /* ---------------- Discord ID copy-to-clipboard ---------------- */
   var discordBtn = document.getElementById('discordCopy');
